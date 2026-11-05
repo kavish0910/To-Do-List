@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My To-Do List</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,500;1,700&family=Parisienne&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light;--cream:#f6efe0;--sand:#ece1c8;--paper:#fffaf0;--line:#e2d5b8;--ink:#3b3326;--soft:#8a7d65;--accent:#7a8b5c;--accent-d:#5f6f45;--hi:#b5573f;--mid:#c99a3b;--lo:#7a8b5c;
+--script:"Parisienne","Snell Roundhand","Apple Chancery",cursive;--display:"Cormorant Garamond",Georgia,"Times New Roman",serif;--body:"Nunito Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+*{box-sizing:border-box}html,body{margin:0}
+body{min-height:100vh;background:var(--cream);color:var(--ink);font:400 16px/1.5 var(--body);display:flex;justify-content:center;padding:48px 20px}
+main{width:100%;max-width:640px}
+.date{font:400 1.7rem/1.2 var(--script);color:var(--accent-d);margin:0}
+h1{font:italic 700 3.2rem/1.05 var(--display);letter-spacing:-.01em;margin:2px 0 18px}
+.progress{background:var(--sand);border-radius:99px;height:8px;overflow:hidden}
+.bar{height:100%;width:0;background:var(--accent);border-radius:99px}
+.pl{display:flex;justify-content:space-between;color:var(--soft);font-size:.9rem;margin:8px 0 24px}
+.pl b{color:var(--ink);font-weight:700}
+.card{background:var(--paper);border:1.5px solid var(--line);border-radius:14px}
+.add{padding:12px;display:grid;gap:10px}
+.add .row{display:flex;gap:8px;flex-wrap:wrap}
+input[type=text],input[type=date],input[type=search],select{font:inherit;color:var(--ink);background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:8px 11px;min-width:0}
+input:focus,select:focus{outline:none;border-color:var(--accent)}
+.add .main{flex:1 1 100%;font-size:1.05rem}
+.add .row label{display:flex;flex-direction:column;font-size:.8rem;color:var(--soft);gap:2px;flex:1 1 130px}
+button{font:inherit;cursor:pointer;border:0;border-radius:10px}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent-d);outline-offset:2px}
+.btn{background:var(--accent);color:#fff;font-weight:700;padding:9px 20px}
+.btn:hover{background:var(--accent-d)}
+.add .btn{align-self:flex-end}
+.tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:22px 0 4px}
+.tabs{display:flex;background:var(--sand);border-radius:11px;padding:3px}
+.tabs button{background:transparent;color:var(--soft);padding:6px 14px;font-weight:600;font-size:.92rem}
+.tabs button[aria-pressed=true]{background:var(--paper);color:var(--ink);box-shadow:0 1px 2px rgba(59,51,38,.15)}
+.tools input[type=search]{flex:1 1 140px}
+ul{list-style:none;margin:12px 0 0;padding:0}
+li{display:flex;align-items:center;gap:13px;background:var(--paper);border:1.5px solid var(--line);border-left:5px solid var(--mid);border-radius:14px;padding:11px 12px;margin-bottom:10px}
+li.p-high{border-left-color:var(--hi)}li.p-low{border-left-color:var(--lo)}
+li.done{background:var(--sand);border-color:var(--sand)}
+li.done .text{text-decoration:line-through;color:var(--soft)}
+input[type=checkbox]{appearance:none;-webkit-appearance:none;flex:none;width:24px;height:24px;margin:0;border:2px solid var(--accent);border-radius:7px;background:var(--paper);cursor:pointer;display:grid;place-items:center}
+input[type=checkbox]:checked{background:var(--accent)}
+input[type=checkbox]:checked::after{content:"";width:6px;height:11px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.body{flex:1;min-width:0}
+.text{overflow-wrap:anywhere}
+.meta{display:flex;gap:8px;flex-wrap:wrap;font-size:.8rem;color:var(--soft);margin-top:2px}
+.chip{border-radius:99px;padding:0 9px;background:var(--sand);font-weight:600}
+.chip.over{background:#f3ddd4;color:var(--hi)}
+.acts{display:flex;gap:2px;flex:none}
+.acts button{background:transparent;color:var(--soft);padding:6px 9px;font-size:.88rem;font-weight:600}
+.acts .ed:hover,.acts .sv:hover,.acts .cn:hover{background:var(--sand);color:var(--ink)}
+.acts .dl:hover{background:#f3ddd4;color:var(--hi)}
+li.editing{flex-wrap:wrap}
+li.editing .eg{flex:1 1 200px;display:flex;gap:8px;flex-wrap:wrap}
+li.editing .eg input[type=text]{flex:1 1 100%}
+.empty{text-align:center;padding:30px 0 6px;color:var(--soft)}
+.empty .s{display:block;font:400 2rem/1.2 var(--script);color:var(--accent-d)}
+.foot{display:flex;justify-content:space-between;align-items:center;margin-top:14px;color:var(--soft);font-size:.9rem}
+.link{background:transparent;color:var(--soft);text-decoration:underline;padding:4px 6px}
+.link:hover{color:var(--hi)}.link:disabled{opacity:.4;cursor:default;text-decoration:none}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--cream);padding:10px 14px;border-radius:12px;display:none;gap:12px;align-items:center;box-shadow:0 6px 20px rgba(59,51,38,.25)}
+.toast button{background:transparent;color:#e6d9ae;font-weight:700;text-decoration:underline;padding:0 4px}
+@media(prefers-reduced-motion:no-preference){.bar{transition:width .3s}button,li{transition:background-color .15s,color .15s}}
+@media(max-width:480px){body{padding:30px 14px}h1{font-size:2.6rem}.acts button{padding:6px 6px}}
+
+body{background:radial-gradient(circle at 6% 0,#fcf5df 0,transparent 42%),radial-gradient(circle at 100% 100%,#eee2c3 0,transparent 45%),radial-gradient(rgba(138,125,101,.16) 1px,transparent 1.3px) 0 0/22px 22px,var(--cream)}
+.wrap{width:100%;max-width:1040px}
+main{max-width:none}
+.hero{display:flex;align-items:center;justify-content:space-between;gap:24px;background:linear-gradient(135deg,var(--paper),var(--sand));border:1.5px solid var(--line);border-radius:22px;padding:30px 36px;margin-bottom:24px}
+.hero .txt{flex:1;min-width:0}
+.hero h1{font-size:3.6rem;margin:2px 0 10px}
+.hero .sub{color:var(--soft);margin:0 0 20px;max-width:38ch}
+.hero .pl{margin:8px 0 0}
+.hero svg{flex:none;width:190px;height:auto}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:24px;align-items:start}
+aside{display:grid;gap:16px;position:sticky;top:24px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{background:var(--paper);border:1.5px solid var(--line);border-radius:14px;padding:12px 14px}
+.tile b{display:block;font:italic 700 2.3rem/1 var(--display)}
+.tile span{font-size:.85rem;color:var(--soft)}
+.tile.warn{background:#f6e3da;border-color:#ecccbd}.tile.warn b{color:var(--hi)}
+.panel{background:var(--paper);border:1.5px solid var(--line);border-radius:16px;padding:18px 20px}
+.panel h2{font:italic 700 1.5rem/1.1 var(--display);margin:0 0 12px}
+.quote{text-align:center;background:var(--sand);border-color:var(--sand)}
+.quote svg{width:70px;color:var(--accent)}
+.quote p{font:400 1.6rem/1.35 var(--script);color:var(--accent-d);margin:8px 0 0}
+.key{margin:0;display:grid;gap:10px}
+.key li{background:none;border:0;border-radius:0;padding:0;margin:0;font-size:.92rem}
+.sw{width:6px;height:26px;border-radius:4px;flex:none}
+.sec{display:flex;align-items:center;gap:14px;font:italic 700 1.8rem/1 var(--display);margin:28px 0 0}
+.sec::after{content:"";flex:1;height:1.5px;background:var(--line)}
+.sec+.tools{margin-top:14px}
+.add{box-shadow:0 10px 26px -16px rgba(59,51,38,.45)}
+li{box-shadow:0 2px 6px -4px rgba(59,51,38,.3)}
+.sign{font:400 1.6rem/1.2 var(--script);color:var(--soft);text-align:center;margin:34px 0 0}
+@media(max-width:860px){.grid{grid-template-columns:1fr}aside{position:static}.hero svg{width:140px}}
+@media(max-width:560px){.hero{padding:22px}.hero svg{display:none}.hero h1{font-size:2.8rem}}
+
+.wrap{position:relative;z-index:1}
+.deco{position:fixed;z-index:0;pointer-events:none;width:170px;height:255px;opacity:.3}
+.deco.l{left:0;bottom:0}.deco.r{right:0;top:0;transform:rotate(180deg)}
+.hero{position:relative;overflow:hidden}.hero .txt,.hero>svg:not(.corner){position:relative}
+.corner{position:absolute;left:0;bottom:0;width:130px;height:auto;opacity:.2;pointer-events:none}
+.addh{font:400 1.7rem/1 var(--script);color:var(--accent-d);margin:2px 0 0}
+.tile{position:relative}
+.tile svg{position:absolute;top:12px;right:12px;width:24px;height:24px;stroke:var(--accent);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;opacity:.75}
+.tile.warn svg{stroke:var(--hi)}
+.cal{flex:none;width:48px;text-align:center;border:1.5px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;line-height:1;box-shadow:0 2px 4px -2px rgba(59,51,38,.3)}
+.cal .cm{display:block;background:var(--accent);color:#fff;font-size:.68rem;font-weight:700;padding:3px 0}
+.cal b{display:block;font:italic 700 1.45rem/1 var(--display);padding:5px 0 0}
+.cal .cw{display:block;font-size:.66rem;color:var(--soft);padding:2px 0 5px}
+.cal.over{border-color:#ecccbd}.cal.over .cm{background:var(--hi)}
+.cal.off{opacity:.6}.cal.off .cm{background:var(--soft)}
+.art{display:block;width:120px;height:auto;margin:0 auto 6px}
+.flour{display:block;width:220px;margin:34px auto 0}.flour+.sign{margin-top:6px}
+@media(max-width:1180px){.deco{display:none}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="branch" viewBox="0 0 200 300"><path d="M10 300 C 40 230, 70 170, 120 110 S 175 30, 185 0" fill="none" stroke="#7a8b5c" stroke-width="3" stroke-linecap="round"/><g fill="#7a8b5c"><ellipse cx="38" cy="236" rx="22" ry="8" transform="rotate(-30 38 236)"/><ellipse cx="74" cy="212" rx="22" ry="8" transform="rotate(35 74 212)" opacity=".75"/><ellipse cx="82" cy="170" rx="24" ry="9" transform="rotate(-35 82 170)"/><ellipse cx="124" cy="150" rx="22" ry="8" transform="rotate(30 124 150)" opacity=".75"/><ellipse cx="128" cy="108" rx="24" ry="9" transform="rotate(-40 128 108)"/><ellipse cx="166" cy="88" rx="20" ry="8" transform="rotate(30 166 88)" opacity=".75"/><ellipse cx="168" cy="44" rx="20" ry="8" transform="rotate(-45 168 44)"/></g><g fill="#c99a3b" opacity=".8"><circle cx="52" cy="190" r="5"/><circle cx="108" cy="130" r="5"/><circle cx="150" cy="70" r="4"/></g></symbol></svg>
+<svg class="deco l" aria-hidden="true"><use href="#branch"/></svg>
+<svg class="deco r" aria-hidden="true"><use href="#branch"/></svg>
+<div class="wrap">
+<header class="hero">
+  <svg class="corner" viewBox="0 0 140 140" aria-hidden="true"><path d="M6 140 C 10 100, 40 60, 90 40" stroke="#7a8b5c" stroke-width="3" fill="none" stroke-linecap="round"/><g fill="#7a8b5c"><ellipse cx="22" cy="106" rx="16" ry="6" transform="rotate(-20 22 106)"/><ellipse cx="46" cy="84" rx="16" ry="6" transform="rotate(25 46 84)"/><ellipse cx="62" cy="62" rx="16" ry="6" transform="rotate(-30 62 62)"/><ellipse cx="88" cy="50" rx="14" ry="5" transform="rotate(20 88 50)"/></g></svg>
+  <div class="txt">
+    <p class="date" id="date"></p>
+    <h1>My To-Do List</h1>
+    <p class="sub">Plan your day, put what matters first, and tick things off as you go.</p>
+    <div class="progress" aria-hidden="true"><div class="bar" id="bar"></div></div>
+    <div class="pl"><span id="pt"></span><span id="left"></span></div>
+  </div>
+  <svg viewBox="0 0 200 170" aria-hidden="true">
+    <g transform="rotate(4 100 90)">
+      <rect x="46" y="14" width="112" height="146" rx="12" fill="#fffaf0" stroke="#e2d5b8" stroke-width="3"/>
+      <rect x="64" y="40" width="18" height="18" rx="5" fill="#7a8b5c"/>
+      <path d="M68 49 L72 53 L78 45" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="64" y="74" width="18" height="18" rx="5" fill="none" stroke="#7a8b5c" stroke-width="2.5"/>
+      <rect x="64" y="108" width="18" height="18" rx="5" fill="none" stroke="#7a8b5c" stroke-width="2.5"/>
+      <g stroke="#e2d5b8" stroke-width="4" stroke-linecap="round"><line x1="94" y1="49" x2="140" y2="49"/><line x1="94" y1="83" x2="130" y2="83"/><line x1="94" y1="117" x2="138" y2="117"/></g>
+    </g>
+    <path d="M30 156 C 22 116, 32 76, 56 42" stroke="#7a8b5c" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <g fill="#7a8b5c" opacity=".9"><path d="M30 124 q-20 -2 -24 -22 q20 0 24 22z"/><path d="M30 124 q18 -8 20 -26 q-20 6 -20 26z" opacity=".75"/><path d="M38 88 q-18 -4 -20 -24 q18 2 20 24z"/><path d="M42 74 q16 -10 16 -28 q-18 8 -16 28z" opacity=".75"/></g>
+    <g transform="translate(152 112) rotate(35)"><rect x="0" y="-8" width="12" height="12" rx="3" fill="#b5573f"/><rect x="0" y="2" width="12" height="58" fill="#c99a3b"/><polygon points="0,60 12,60 6,74" fill="#f0dcb0"/><polygon points="4.5,70 7.5,70 6,74" fill="#3b3326"/></g>
+    <g fill="#c99a3b"><path d="M176 18 l3 8 8 3 -8 3 -3 8 -3 -8 -8 -3 8 -3z" opacity=".8"/><path d="M22 20 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2z" opacity=".6"/><circle cx="150" cy="150" r="3" opacity=".5"/></g>
+  </svg>
+</header>
+<div class="grid"><main>
+
+  <form class="card add" id="addForm" autocomplete="off">
+    <p class="addh">Write it down</p>
+    <input class="main" id="newTask" type="text" placeholder="What do you need to do?" aria-label="New task" maxlength="200">
+    <div class="row">
+      <label>Due date<input id="newDue" type="date"></label>
+      <label>Priority<select id="newPri"><option value="high">High</option><option value="medium" selected>Medium</option><option value="low">Low</option></select></label>
+      <button class="btn" type="submit">Add task</button>
+    </div>
+  </form>
+
+  <h2 class="sec">Your tasks</h2>
+  <div class="tools">
+    <div class="tabs" role="group" aria-label="Filter tasks">
+      <button type="button" data-f="all" aria-pressed="true">All</button>
+      <button type="button" data-f="active" aria-pressed="false">Active</button>
+      <button type="button" data-f="done" aria-pressed="false">Done</button>
+    </div>
+    <input id="q" type="search" placeholder="Search tasks" aria-label="Search tasks">
+    <select id="sort" aria-label="Sort tasks"><option value="new">Newest first</option><option value="due">By due date</option><option value="pri">By priority</option></select>
+  </div>
+
+  <ul id="list"></ul>
+  <div class="empty" id="empty"></div>
+  <div class="foot"><span id="count"></span><button class="link" id="clear" type="button">Clear completed</button></div>
+</main>
+<aside>
+  <div class="stats">
+    <div class="tile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M5 12h14M5 17h9"/></svg><b id="sT">0</b><span>Total tasks</span></div>
+    <div class="tile"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg><b id="sD">0</b><span>Completed</span></div>
+    <div class="tile"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg><b id="sA">0</b><span>Still to do</span></div>
+    <div class="tile warn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5l8 14H4z"/><path d="M12 10v4M12 16.5v.5"/></svg><b id="sO">0</b><span>Overdue</span></div>
+  </div>
+  <div class="panel quote">
+    <svg viewBox="0 0 70 14" aria-hidden="true"><path d="M2 7 H24 M46 7 H68" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><path d="M27 7 q4 -7 8 0 q4 7 8 0" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+    <p id="qt"></p>
+  </div>
+  <div class="panel">
+    <h2>Priority key</h2>
+    <ul class="key">
+      <li><span class="sw" style="background:var(--hi)"></span><span><b>High</b>, do these first</span></li>
+      <li><span class="sw" style="background:var(--mid)"></span><span><b>Medium</b>, do these soon</span></li>
+      <li><span class="sw" style="background:var(--lo)"></span><span><b>Low</b>, whenever you can</span></li>
+    </ul>
+  </div>
+</aside>
+</div>
+<svg class="flour" viewBox="0 0 220 24" aria-hidden="true"><path d="M10 12 H88 M132 12 H210" stroke="#e2d5b8" stroke-width="2" stroke-linecap="round" fill="none"/><path d="M96 12 q7 -10 14 0 q7 10 14 0" stroke="#7a8b5c" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="110" cy="12" r="2.5" fill="#c99a3b"/></svg>
+<p class="sign">One small step at a time</p>
+</div>
+<div class="toast" id="toast"><span>Task deleted.</span><button id="undo" type="button">Undo</button></div>
+
+<script>
+(function(){
+var KEY="todo-list-tasks-v1",tasks=[],editingId=null,filter="all",query="",sort="new",undoItem=null,undoTimer;
+var $=function(i){return document.getElementById(i)};
+function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+function load(){try{var d=JSON.parse(localStorage.getItem(KEY)||"[]");tasks=Array.isArray(d)?d.map(function(t,i){return{id:t.id||Date.now()+i,text:String(t.text||""),done:!!t.done,priority:t.priority||"medium",due:t.due||"",created:t.created||i}}):[]}catch(e){tasks=[]}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(tasks))}catch(e){}}
+var PRI={high:0,medium:1,low:2},PL={high:"High",medium:"Medium",low:"Low"};
+function parse(s){var p=s.split("-");return new Date(+p[0],+p[1]-1,+p[2])}
+function dueInfo(s){
+  var t=new Date();t=new Date(t.getFullYear(),t.getMonth(),t.getDate());
+  var d=Math.round((parse(s)-t)/864e5),n=parse(s).toLocaleDateString(undefined,{month:"short",day:"numeric"});
+  if(d<0)return{txt:"Overdue, "+n,over:true};
+  if(d===0)return{txt:"Due today"};
+  if(d===1)return{txt:"Due tomorrow"};
+  return{txt:"Due "+n};
+}
+function visible(){
+  var q=query.toLowerCase();
+  var r=tasks.filter(function(t){
+    if(filter==="active"&&t.done)return false;
+    if(filter==="done"&&!t.done)return false;
+    return !q||t.text.toLowerCase().indexOf(q)>-1;
+  });
+  r.sort(function(a,b){
+    if(sort==="due"){if(!a.due&&!b.due)return b.created-a.created;if(!a.due)return 1;if(!b.due)return -1;return a.due<b.due?-1:a.due>b.due?1:0}
+    if(sort==="pri")return PRI[a.priority]-PRI[b.priority]||b.created-a.created;
+    return b.created-a.created;
+  });
+  return r;
+}
+function render(){
+  var list=$("list");list.innerHTML="";
+  visible().forEach(function(t){
+    var li=el("li","p-"+t.priority+(t.done?" done":""));
+    var cb=el("input");cb.type="checkbox";cb.checked=t.done;cb.setAttribute("aria-label","Mark task as done");
+    cb.addEventListener("change",function(){t.done=cb.checked;save();render()});
+    li.appendChild(cb);
+    var acts=el("div","acts");
+    if(editingId===t.id){
+      li.className+=" editing";
+      var eg=el("div","eg"),ti=el("input");ti.type="text";ti.value=t.text;ti.maxLength=200;ti.setAttribute("aria-label","Edit task");
+      var di=el("input");di.type="date";di.value=t.due;di.setAttribute("aria-label","Due date");
+      var ps=el("select");ps.setAttribute("aria-label","Priority");
+      ["high","medium","low"].forEach(function(k){var o=el("option",null,PL[k]);o.value=k;if(k===t.priority)o.selected=true;ps.appendChild(o)});
+      eg.appendChild(ti);eg.appendChild(di);eg.appendChild(ps);li.appendChild(eg);
+      var commit=function(){var v=ti.value.trim();if(v)t.text=v;t.due=di.value;t.priority=ps.value;editingId=null;save();render()};
+      ti.addEventListener("keydown",function(e){if(e.key==="Enter")commit();if(e.key==="Escape"){editingId=null;render()}});
+      var sv=el("button","sv","Save");sv.type="button";sv.addEventListener("click",commit);
+      var cn=el("button","cn","Cancel");cn.type="button";cn.addEventListener("click",function(){editingId=null;render()});
+      acts.appendChild(sv);acts.appendChild(cn);li.appendChild(acts);list.appendChild(li);
+      setTimeout(function(){ti.focus();ti.select()},0);return;
+    }
+    var b=el("div","body");b.appendChild(el("div","text",t.text));
+    var m=el("div","meta");m.appendChild(el("span","chip",PL[t.priority]+" priority"));
+    if(t.due){var dd=parse(t.due),di2=dueInfo(t.due),cal=el("div","cal"+(t.done?" off":di2.over?" over":""));
+      cal.title=di2.txt;
+      cal.appendChild(el("span","cm",dd.toLocaleDateString(undefined,{month:"short"})));
+      cal.appendChild(el("b",null,dd.getDate()));
+      cal.appendChild(el("span","cw",dd.toLocaleDateString(undefined,{weekday:"short"})));
+      li.appendChild(cal);
+      if(!t.done)m.appendChild(el("span","chip"+(di2.over?" over":""),di2.txt))}
+    b.appendChild(m);li.appendChild(b);
+    var ed=el("button","ed","Edit");ed.type="button";ed.addEventListener("click",function(){editingId=t.id;render()});
+    var dl=el("button","dl","Delete");dl.type="button";dl.addEventListener("click",function(){
+      undoItem={t:t,i:tasks.indexOf(t)};tasks=tasks.filter(function(x){return x!==t});save();render();
+      $("toast").style.display="flex";clearTimeout(undoTimer);undoTimer=setTimeout(function(){$("toast").style.display="none";undoItem=null},6000);
+    });
+    acts.appendChild(ed);acts.appendChild(dl);li.appendChild(acts);list.appendChild(li);
+  });
+  var total=tasks.length,done=tasks.filter(function(t){return t.done}).length,left=total-done;
+  $("bar").style.width=(total?Math.round(done/total*100):0)+"%";
+  $("pt").innerHTML="<b>"+done+"</b> of "+total+" done";
+  $("left").textContent=total?(left+(left===1?" task":" tasks")+" left"):"";
+  var e=$("empty");e.innerHTML=!total?POT:!list.children.length?MAG:"";
+  if(!total){e.appendChild(el("span","s","A fresh page"));e.appendChild(document.createTextNode("Add your first task above to get started."))}
+  else if(!list.children.length){e.appendChild(el("span","s","Nothing here"));e.appendChild(document.createTextNode("No tasks match this filter or search."))}
+  $("count").textContent=total?("Showing "+list.children.length+" of "+total):"";
+  $("clear").disabled=!done;
+  $("sT").textContent=total;$("sD").textContent=done;$("sA").textContent=left;
+  $("sO").textContent=tasks.filter(function(t){return !t.done&&t.due&&dueInfo(t.due).over}).length;
+}
+$("addForm").addEventListener("submit",function(e){
+  e.preventDefault();var v=$("newTask").value.trim();if(!v)return;
+  tasks.push({id:Date.now()+Math.random(),text:v,done:false,priority:$("newPri").value,due:$("newDue").value,created:Date.now()});
+  $("newTask").value="";$("newDue").value="";$("newPri").value="medium";save();render();$("newTask").focus();
+});
+Array.prototype.forEach.call(document.querySelectorAll(".tabs button"),function(b){
+  b.addEventListener("click",function(){filter=b.getAttribute("data-f");
+    Array.prototype.forEach.call(document.querySelectorAll(".tabs button"),function(x){x.setAttribute("aria-pressed",x===b)});render()});
+});
+$("q").addEventListener("input",function(e){query=e.target.value.trim();render()});
+$("sort").addEventListener("change",function(e){sort=e.target.value;render()});
+$("clear").addEventListener("click",function(){tasks=tasks.filter(function(t){return !t.done});save();render()});
+$("undo").addEventListener("click",function(){
+  if(!undoItem)return;tasks.splice(Math.min(undoItem.i,tasks.length),0,undoItem.t);undoItem=null;
+  $("toast").style.display="none";save();render();
+});
+$("date").textContent=new Date().toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"});
+var POT=`<svg class="art" viewBox="0 0 120 110" aria-hidden="true"><ellipse cx="60" cy="104" rx="30" ry="4" fill="#e2d5b8"/><path d="M42 70 h36 l-5 30 h-26z" fill="#c99a3b"/><rect x="38" y="64" width="44" height="9" rx="3" fill="#b5873a"/><path d="M60 64 C 60 46, 58 34, 60 20" stroke="#7a8b5c" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M60 46 q-22 -2 -26 -22 q22 0 26 22z" fill="#7a8b5c"/><path d="M60 38 q22 -2 24 -22 q-22 2 -24 22z" fill="#7a8b5c" opacity=".75"/></svg>`,
+MAG=`<svg class="art" viewBox="0 0 120 110" aria-hidden="true"><circle cx="52" cy="48" r="26" fill="#fffaf0" stroke="#7a8b5c" stroke-width="5"/><path d="M72 68 L98 94" stroke="#c99a3b" stroke-width="8" stroke-linecap="round"/><path d="M42 48 q10 -12 22 -4" stroke="#e2d5b8" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`;
+var QS=["Little by little, the list gets shorter.","One task at a time is still progress.","A calm day starts with a clear list.","Do the next small thing well.","Finished is better than perfect.","Tick one off and feel the page lighten.","Today’s effort is tomorrow’s ease."];
+$("qt").textContent=QS[new Date().getDate()%QS.length];
+load();render();
+})();
+</script>
+</body>
+</html>
